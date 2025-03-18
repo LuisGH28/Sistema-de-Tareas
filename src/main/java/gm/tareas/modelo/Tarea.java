@@ -21,7 +21,7 @@ public class Tarea {
   // the variables are the columns in the table
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  //@GeneratedValue(strategy = GenerationType.IDENTITY)
   private Integer idTarea;
   private String nombreTarea;
   private String responsable;
