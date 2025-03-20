@@ -27,8 +27,7 @@ public class SistemaTareasFx extends Application {
     public void start(Stage stage) throws Exception {
         FXMLLoader loader =
                 new FXMLLoader(TareasApplication.class.getResource("/templates/index.fxml"));
-        loader.setControllerFactory(applicationContext::getBean); // get the spring boot objects
-
+        loader.setControllerFactory(applicationContext::getBean);
         Scene escena = new Scene(loader.load());
         stage.setScene(escena);
         stage.show();
