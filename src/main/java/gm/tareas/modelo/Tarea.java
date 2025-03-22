@@ -1,31 +1,52 @@
 package gm.tareas.modelo;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @Entity
-@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
 public class Tarea {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer idTarea;
+    private String nombreTarea;
+    private String responsable;
+    private String estatus;
 
-  // The following code create the columns in the database table
-  // @GeneratedValue(strategy = GenerationType.IDENTITY) is used to auto increment the idTarea column
-  // @Entity is used to create a table in the database 
-  // the variables are the columns in the table
+    public Integer getIdTarea() {
+        return idTarea;
+    }
 
-  @Id
-  //@GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Integer idTarea;
-  private String nombreTarea;
-  private String responsable;
-  private String estatus;
+    public void setIdTarea(Integer idTarea) {
+        this.idTarea = idTarea;
+    }
 
-  
+    public String getNombreTarea() {
+        return nombreTarea;
+    }
+
+    public void setNombreTarea(String nombreTarea) {
+        this.nombreTarea = nombreTarea;
+    }
+
+    public String getResponsable() {
+        return responsable;
+    }
+
+    public void setResponsable(String responsable) {
+        this.responsable = responsable;
+    }
+
+    public String getEstatus() {
+        return estatus;
+    }
+
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
+    }
 }

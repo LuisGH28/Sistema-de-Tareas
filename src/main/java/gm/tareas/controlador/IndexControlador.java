@@ -11,14 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.scene.control.*;
 
 @Component
 public class IndexControlador implements Initializable {
-
     private static final Logger logger =
             LoggerFactory.getLogger(IndexControlador.class);
 
@@ -38,10 +36,10 @@ public class IndexControlador implements Initializable {
     private TableColumn<Tarea, String> responsableColumna;
 
     @FXML
-    private  TableColumn<Tarea, String> estatusColumna;
+    private TableColumn<Tarea, String> estatusColumna;
 
     private final ObservableList<Tarea> tareaList =
-            FXCollections.observableArrayList(); // Show the changes of the data
+            FXCollections.observableArrayList();
 
     @FXML
     private TextField nombreTareaTexto;
@@ -52,17 +50,16 @@ public class IndexControlador implements Initializable {
     @FXML
     private TextField estatusTexto;
 
+    private Integer idTareaInterno;
+
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-        tareaTabla.getSelectionModel().setSelectionMode(SelectionMode.SINGLE); // select one element
+        tareaTabla.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         configurarColumnas();
         listarTareas();
     }
 
     private void configurarColumnas(){
-
-        // Indica los datos que se van a cargar en cada una de las columnas
-        // Relacaiona los datos de la columnas con los de la base de datos
         idTareaColumna.setCellValueFactory(new PropertyValueFactory<>("idTarea"));
         nombreTareaColumna.setCellValueFactory(new PropertyValueFactory<>("nombreTarea"));
         responsableColumna.setCellValueFactory(new PropertyValueFactory<>("responsable"));
@@ -70,20 +67,22 @@ public class IndexControlador implements Initializable {
     }
 
     private void listarTareas(){
-        logger.info("Ejecuatando listado de tareas");
+        logger.info("Ejecutando listado de tareas");
         tareaList.clear();
         tareaList.addAll(tareaServicio.listarTareas());
-        tareaTabla.setItems(tareaList); // Agrega toda la informacion a la tabla
+        tareaTabla.setItems(tareaList);
     }
 
     public void agregarTarea(){
         if(nombreTareaTexto.getText().isEmpty()){
-            mostrarMensaje("Error de Validacion", "Debe proporcionar una tarea");
+            mostrarMensaje("Error Validacion", "Debe proporcionar una tarea");
             nombreTareaTexto.requestFocus();
             return;
-        }else{
+        }
+        else{
             var tarea = new Tarea();
             recolectarDatosFormulario(tarea);
+            tarea.setIdTarea(null);
             tareaServicio.guardarTarea(tarea);
             mostrarMensaje("Informacion", "Tarea agregada");
             limpiarFormulario();
@@ -91,13 +90,57 @@ public class IndexControlador implements Initializable {
         }
     }
 
+    public void cargarTareaFormulario(){
+        var tarea = tareaTabla.getSelectionModel().getSelectedItem();
+        if(tarea != null){
+            idTareaInterno = tarea.getIdTarea();
+            nombreTareaTexto.setText(tarea.getNombreTarea());
+            responsableTexto.setText(tarea.getResponsable());
+            estatusTexto.setText(tarea.getEstatus());
+        }
+    }
+
     private void recolectarDatosFormulario(Tarea tarea){
+        if(idTareaInterno != null)
+            tarea.setIdTarea(idTareaInterno);
         tarea.setNombreTarea(nombreTareaTexto.getText());
         tarea.setResponsable(responsableTexto.getText());
         tarea.setEstatus(estatusTexto.getText());
     }
 
-    private void limpiarFormulario(){
+    public void modificarTarea(){
+        if(idTareaInterno == null){
+            mostrarMensaje("Informacion", "Debe seleccionar una tarea");
+            return;
+        }
+        if(nombreTareaTexto.getText().isEmpty()){
+            mostrarMensaje("Error Validacion", "Debe proporcionar una tarea");
+            nombreTareaTexto.requestFocus();
+            return;
+        }
+        var tarea = new Tarea();
+        recolectarDatosFormulario(tarea);
+        tareaServicio.guardarTarea(tarea);
+        mostrarMensaje("Informacion", "Tarea modificada");
+        limpiarFormulario();
+        listarTareas();
+    }
+
+    public void eliminarTarea(){
+        var tarea = tareaTabla.getSelectionModel().getSelectedItem();
+        if(tarea != null){
+            logger.info("Registo a eliminar: " + tarea.toString());
+            tareaServicio.eliminarTarea(tarea);
+            mostrarMensaje("Informacion", "Tarea eliminada: " + tarea.getIdTarea());
+            limpiarFormulario();
+            listarTareas();
+        }else{
+            mostrarMensaje("Error", "No se ha seleccionado ninguna tarea");
+        }
+    }
+
+    public void limpiarFormulario(){
+        idTareaInterno = null;
         nombreTareaTexto.clear();
         responsableTexto.clear();
         estatusTexto.clear();
@@ -110,4 +153,6 @@ public class IndexControlador implements Initializable {
         alerta.setContentText(mensaje);
         alerta.showAndWait();
     }
+
+
 }
